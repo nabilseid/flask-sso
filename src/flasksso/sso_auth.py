@@ -1,12 +1,13 @@
 import requests
 from functools import wraps
 from flask import request, Response
-from util import get_config, get_env_from_url
+from .utils import get_config, get_env_from_url
 
 class SsoAuth(object):
     def __init__(self, env = None):
         self.env = env
         self.config = get_config(self.env)
+        self.referer = None
         self.sso_response = None
 
     def authenticate(self):
@@ -25,9 +26,9 @@ class SsoAuth(object):
             else return 401 error with sso response content
         """
         
-        if (env == None):
-            referer = request.headers.get('referer')
-            self.env = get_env_from_url(referer)
+        if (self.env == None):
+            self.referer = request.headers.get('referer')
+            self.env = get_env_from_url(self.referer)
             self.config = get_config(self.env)
 
         self.sso_response = requests.get(
