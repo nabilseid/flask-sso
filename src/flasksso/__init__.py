@@ -1,1 +1,1 @@
-from .sso_auth.py import SsoAuth
+from .sso_auth import SsoAuth

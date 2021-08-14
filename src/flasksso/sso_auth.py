@@ -70,7 +70,4 @@ class SsoAuth(object):
                 status = self.sso_response.status_code,
                 mimetype = 'application/json'
             )
-
-
-
-
+        return wrapper
