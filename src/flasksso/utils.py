@@ -61,8 +61,9 @@ def get_env_from_url(url):
     
     split_url = urlsplit(url)
     net_loc = split_url.netloc
-    env = net_loc.split('.')[0]
-
+    host = net_loc.split(':')[0]
+    env = host.split('.')[0]
+    
     if env in url_prefix:
         return env
 
