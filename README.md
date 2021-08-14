@@ -4,8 +4,10 @@ adludio sso authentication based route guard for flask
 
 ## Installation
 
+Installing directly from git requires token, username:password no longer works
+
 ```bash
-pip3 install git+https://github.com:FutureAdLabs/flask-sso.git#egg=flask-sso
+pip3 install git+https://<token>@github.com/FutureAdLabs/flask-sso#egg=flask-sso
 ```
 
 ## Usage
