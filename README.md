@@ -38,7 +38,7 @@ fetch('/say-hello', {
 
 ## Authentication Fails!
 If authentication fails, sso error response is returned
-```json
+```javascript
 {
   data: null,
   error: {
