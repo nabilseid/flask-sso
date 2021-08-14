@@ -9,6 +9,18 @@ class SsoAuth(object):
 
     def authenticate(self):
         """
+        authenticate user 
+
+        Return
+        ------
+        : bool
+            true if user is autherized other wise false 
+
+        Notes
+        -----
+        make request to env.sso.adludio.com/users/me with a bearer token
+            if response is 200, users is authenticated precede to route 
+            else return 401 error with sso response content
         """
         
         referer = request.headers.get('referer')
@@ -31,6 +43,16 @@ class SsoAuth(object):
 
     def required(self, route_func):
         """
+        a decorated to guard a route endpoint
+
+        Example
+        -------
+        >>> sso_auth = SsoAuth()
+        >>> 
+        >>> @app.route('/endpoint', methods=['GET'])
+        >>> @sso_auth.required
+        >>> def route_func():
+        >>>    pass
         """
 
         @wraps(route_func)
