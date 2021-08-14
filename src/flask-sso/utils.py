@@ -1,6 +1,5 @@
 from urllib.parse import urlsplit
-from src.config import ProductionConfig, StagingConfig,
-                       TestingConfig, DevelopmentConfig 
+from config import ProductionConfig, StagingConfig, TestingConfig, DevelopmentConfig
 
 url_prefix = ['dev', 'staging', 'testing']
 
