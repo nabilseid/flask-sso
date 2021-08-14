@@ -33,11 +33,11 @@ def get_config(env='testing'):
         'dev': DevelopmentConfig,
         'staging': StagingConfig,
         'testing': TestingConfig,
-        'localhost': TestingConfig
+        'localhost': TestingConfig,
         'prod': ProductionConfig,
     }
 
-    return configs[env]
+    return configs[env] if env != None else None
 
 def get_env_from_url(url):
     """

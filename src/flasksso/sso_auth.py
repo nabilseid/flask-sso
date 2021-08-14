@@ -4,7 +4,9 @@ from flask import request, Response
 from util import get_config, get_env_from_url
 
 class SsoAuth(object):
-    def __init__(self):
+    def __init__(self, env = None):
+        self.env = env
+        self.config = get_config(self.env)
         self.sso_response = None
 
     def authenticate(self):
@@ -23,13 +25,14 @@ class SsoAuth(object):
             else return 401 error with sso response content
         """
         
-        referer = request.headers.get('referer')
-        env = get_env_from_url(referer)
-        config = get_config(env)
+        if (env == None):
+            referer = request.headers.get('referer')
+            self.env = get_env_from_url(referer)
+            self.config = get_config(self.env)
 
         self.sso_response = requests.get(
-            f'{config.ssoURL}/users/me',
-            headers={
+            f'{self.config.ssoURL}/users/me',
+            headers = {
                 'content-type':'application/json',
                 'authorization':request.headers.get('authorization'),
                 'Access-Origin': '*'
