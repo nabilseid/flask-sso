@@ -1,7 +1,7 @@
 from urllib.parse import urlsplit
 from config import ProductionConfig, StagingConfig, TestingConfig, DevelopmentConfig
 
-url_prefix = ['dev', 'staging', 'testing']
+url_prefix = ['dev', 'staging', 'testing', 'localhost']
 
 def get_config(env='testing'):
     """
@@ -12,10 +12,11 @@ def get_config(env='testing'):
     env: str
         current environment. 
         Possible values
-            dev:      development 
-            staging:  staging
-            testing:  testing
-            prod:     production -> not know infered
+            dev:       development 
+            staging:   staging
+            testing:   testing
+            localhost: testing 
+            prod:      production -> not know infered
 
     Return 
     ------
@@ -32,6 +33,7 @@ def get_config(env='testing'):
         'dev': DevelopmentConfig,
         'staging': StagingConfig,
         'testing': TestingConfig,
+        'localhost': TestingConfig
         'prod': ProductionConfig,
     }
 
