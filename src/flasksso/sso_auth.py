@@ -3,8 +3,9 @@ from functools import wraps
 from flask import request, Response
 from .utils import get_config, get_env_from_url
 
+
 class SsoAuth(object):
-    def __init__(self, env = None):
+    def __init__(self, env=None):
         self.env = env
         self.config = get_config(self.env)
         self.referer = None
@@ -25,7 +26,7 @@ class SsoAuth(object):
             if response is 200, users is authenticated precede to route 
             else return 401 error with sso response content
         """
-        
+
         if (self.env == None):
             self.referer = request.headers.get('referer')
             self.env = get_env_from_url(self.referer)
@@ -33,9 +34,9 @@ class SsoAuth(object):
 
         self.sso_response = requests.get(
             f'{self.config.ssoURL}/users/me',
-            headers = {
-                'content-type':'application/json',
-                'authorization':request.headers.get('authorization'),
+            headers={
+                'content-type': 'application/json',
+                'authorization': request.headers.get('authorization'),
                 'Access-Origin': '*'
             }
         )
@@ -61,13 +62,17 @@ class SsoAuth(object):
 
         @wraps(route_func)
         def wrapper(*args, **kwargs):
+            # handle pre-flight request
+            if request.method.lower() == 'options':
+                return Response()
+
             if self.authenticate():
                 # authentication passed, preced to route function
                 return route_func(*args, **kwargs)
-            # authenticate failed, return response of sso 
+            # authenticate failed, return response of sso
             return Response(
-                response = self.sso_response.content,
-                status = self.sso_response.status_code,
-                mimetype = 'application/json'
+                response=self.sso_response.content,
+                status=self.sso_response.status_code,
+                mimetype='application/json'
             )
         return wrapper
