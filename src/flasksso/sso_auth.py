@@ -1,3 +1,4 @@
+import socket
 import requests
 from functools import wraps
 from flask import request, Response
@@ -10,6 +11,15 @@ class SsoAuth(object):
         self.config = get_config(self.env)
         self.referer = None
         self.sso_response = None
+
+    def validate_ip(self, ip):
+        """
+        """
+        try:
+            socket.inet_aton(ip)
+            return True
+        except socket.error:
+            return False
 
     def authenticate(self):
         """
@@ -29,6 +39,12 @@ class SsoAuth(object):
 
         if (self.env == None):
             self.referer = request.headers.get('referer')
+            remote_addr = request.environ['REMOTE_ADDR']
+
+            # for local api testing platforms
+            if self.referer == None and self.validate_ip(remote_addr):
+                self.referer = 'https://localhost:5000'
+
             self.env = get_env_from_url(self.referer)
             self.config = get_config(self.env)
 
