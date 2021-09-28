@@ -1,6 +1,7 @@
 class Config(object):
     DEBUG = False
     TESTING = False
+    POLICYCHECKTOGGLE = True
 
 class ProductionConfig(Config):
     ssoURL = "https://api.sso.adludio.com"
