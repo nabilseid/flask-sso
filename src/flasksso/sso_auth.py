@@ -130,30 +130,27 @@ class SsoAuth(object):
 
                 if request.method.lower() == 'options':
                     return Response()
-                if self.authenticate():
+                
+                self.authenticate()
 
-                        # authentication passed
+                # authentication called to get sso content, result can be anything 
 
-                    if self.check_user_serviceactions(required_serviceactions):
+                if ( (self.check_user_serviceactions(required_serviceactions) ) | (not self.config.POLICYCHECKTOGGLE) ):
 
-                    # authentication and policy check passed, proceed to route function
+                # policy check toggle is 'ON' and  check has succesfully passed, proceed to route function
 
-                        return route_func(*args, **kwargs)
+                    return route_func(*args, **kwargs)
 
-                    # user session doesnt have enough right , return error response
+                # user session doesnt have enough right , return error response
 
-                    return Response(response=json.dumps({'data': None,
-                                    'error': {'message': 'Insufficient rights to  resource'
-                                    , 'status': 403}}), 
-                                    status=403,
-                                    mimetype='application/json') 
-                                    # "label": "ERR_TOKEN_INVALID"
+                return Response(response=json.dumps({'data': None,
+                                'error': {'message': 'Insufficient rights to  resource'
+                                , 'status': 403}}), 
+                                status=403,
+                                mimetype='application/json') 
+                                # "label": "ERR_TOKEN_INVALID"
 
-                    # authenticate failed, return response of sso
-
-                return Response(response=self.sso_response.content,
-                                status=self.sso_response.status_code,
-                                mimetype='application/json')
+                
 
             return wrapper
 
@@ -172,32 +169,35 @@ class SsoAuth(object):
             Notes
             -----
             make request to env.sso.adludio.com/users/me with a bearer token
-            if response is 200, users is authenticated precede to check if user
+            and once sso content is received proceed to check if user
             has required service actions as part of granted policies 
-            else return error with 403 for policy check failure or 
-            401 for authentication failure.
+            else return error with 403 for policy check failure
 
 
 
         """
 
             # json to python object
-
+        
         sso_response = json.loads(self.sso_response.content.decode('utf-8'))
-
+        
             # proceed to check if required service actions are present
         
-        if 'policies' in sso_response['data']:
-            user_serviceactions = [list(x.values())[0] for x in
-                                   sso_response['data']['policies']]
-            user_serviceactions = \
-                list(itertools.chain(*user_serviceactions))
+        if (sso_response['data'] != None):
+            
+            # check for reply data from sso 
+            
+            if 'policies' in sso_response['data']:
+                user_serviceactions = [list(x.values())[0] for x in
+                                       sso_response['data']['policies']]
+                user_serviceactions = \
+                    list(itertools.chain(*user_serviceactions))
 
-                # check required service actions are part of user service actions
-                # also make sure wildcard is granted access
+                    # check required service actions are part of user service actions
+                    # also make sure wildcard is granted access
 
-            return set(required_serviceactions).issubset(user_serviceactions) \
-                | ('adl:*:*' in user_serviceactions)
+                return set(required_serviceactions).issubset(user_serviceactions) \
+                    | ('adl:*:*' in user_serviceactions)
 
         return False
 
